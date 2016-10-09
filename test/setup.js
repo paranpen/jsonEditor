@@ -1,17 +1,19 @@
-'use strict';
+/* setup.js */
+require('babel-register')();
 
-import jsdom from 'jsdom';
+var jsdom = require('jsdom').jsdom;
 
-// Define some html to be our basic document
-// JSDOM will consume this and act as if we were in a browser
-const DEFAULT_HTML = '<html><body></body></html>';
+var exposedProperties = ['window', 'navigator', 'document'];
 
-// Define some variables to make it look like we're a browser
-// First, use JSDOM's fake DOM as the document
-global.document = jsdom.jsdom(DEFAULT_HTML);
-
-// Set up a mock window
+global.document = jsdom('');
 global.window = document.defaultView;
+Object.keys(document.defaultView).forEach((property) => {
+  if (typeof global[property] === 'undefined') {
+    exposedProperties.push(property);
+    global[property] = document.defaultView[property];
+  }
+});
 
-// Allow for things like window.location
-global.navigator = window.navigator;
+global.navigator = {
+  userAgent: 'node.js'
+};

@@ -1,15 +1,17 @@
-import React, {Component} from 'react';
+import expect from 'expect'
+import React from 'react'
 import Freezer from 'freezer-js'
+import { shallow, mount, render } from 'enzyme'
+//import DocEditor from '../src/ui/DocEditor.jsx'
 
-/****************
-JSON data to edit
-*****************/
 var json = {
-	hola: 'amigo',
-	adios:'enemigo',
-	obj: { hi: 'man', bye: 'dude' },
-	arr: ['a', 'b', {c: 1}, 'd']
+  hola: "amigo",
+  array: [1,2,3]
 };
+
+function logChange( value ){
+   console.log( value );
+}
 
 // Create a Freezer store
 var frozen = new Freezer( { json: json });
@@ -21,16 +23,12 @@ Helper functions
 // Guess the type given a value to create the proper attribute
 var guessType = function( value ){
 	var type = typeof value;
-
 	if( type != 'object' )
 		return type;
-
 	if( value instanceof Array )
 		return 'array';
-
 	if( value instanceof Date)
 		return 'date';
-
 	return 'object';
 };
 
@@ -52,8 +50,7 @@ var typeDefaultValues = {
  */
 var createAttribute = function( value, original, parent, key ){
 	var type = guessType( value );
-		className = StringAttribute
-	;
+		className = StringAttribute;
 
 	if( type == 'object' )
 		className = ObjectAttribute;
@@ -89,18 +86,15 @@ var DocEditor = React.createClass({
 		return (
 			<div className="docEditor">
               <pre>{ JSON.stringify( this.props.store.json, null, '  ')}</pre>
-			<ObjectAttribute value={ this.props.store.json } original={ this.props.original.json }/>
-				
+			  <ObjectAttribute value={ this.props.store.json } original={ this.props.original.json }/>
 			</div>
 		);
 	},
 
 	componentDidMount: function(){
 		var me = this,
-
 			// Let's create a listener to update the store on change
-			listener = this.props.store.getListener()
-		;
+			listener = this.props.store.getListener();
 
 		// We are going to update the props every time the store changes
 		listener.on('update', function( updated ){
@@ -391,4 +385,116 @@ var AttributeCreator = React.createClass({
 	}
 });
 
-export default DocEditor;
+describe('<ToDoItem />', () => {
+  it('renders the title', () => {
+    const item = mockItem()
+    const wrapper = shallow(<ToDoItem item={item} />)
+    expect(wrapper.text()).toContain(item.title)
+  })
+
+  it('renders a check mark when complete', () => {
+    const item = mockItem({ complete: true })
+    const wrapper = shallow(<ToDoItem item={item} />)
+    expect(wrapper.find('.item-mark').text()).toEqual('✓')
+  })
+
+  it('renders a bullet when not complete', () => {
+    const item = mockItem({ complete: false })
+    const wrapper = shallow(<ToDoItem item={item} />)
+    expect(wrapper.find('.item-mark').text()).toEqual('•')
+  })
+})
+
+
+
+/*
+class ToDoItem extends React.Component {
+  render() {
+    const { item, onCompleteChange } = this.props;
+    return (
+      <div className="item">
+        <span className="item-mark">{item.complete ? '✓' : '•'}</span>
+        <span className="item-title">{item.title}</span>
+        <a className="item-button" onClick={() => onCompleteChange(item, !item.complete)}>
+          Mark as {item.complete ? 'Pending' : 'Complete'}
+        </a>
+      </div>
+    );
+  }
+}
+class ToDoList extends React.Component {
+  render() {
+    const { items, onChange } = this.props;
+    return (
+      <div className="todo-list">
+        {items.map(item => <ToDoItem key={item.id} item={item} onCompleteChange={onChange} />)}
+      </div>
+    );
+  }
+}
+function mockItem(overrides = {complete: true}) {
+  return { complete: overrides.complete, title: 'kjfdjkfd' }
+}
+
+describe('<ToDoItem />', () => {
+  it('renders the title', () => {
+    const item = mockItem()
+    const wrapper = shallow(<ToDoItem item={item} />)
+    expect(wrapper.text()).toContain(item.title)
+  })
+
+  it('renders a check mark when complete', () => {
+    const item = mockItem({ complete: true })
+    const wrapper = shallow(<ToDoItem item={item} />)
+    expect(wrapper.find('.item-mark').text()).toEqual('✓')
+  })
+
+  it('renders a bullet when not complete', () => {
+    const item = mockItem({ complete: false })
+    const wrapper = shallow(<ToDoItem item={item} />)
+    expect(wrapper.find('.item-mark').text()).toEqual('•')
+  })
+
+  it('calls onCompleteChange handler with the right arguments when clicked', () => {
+    const spy = sinon.spy()
+    const item = mockItem()
+    const wrapper = shallow(<ToDoItem item={item} onCompleteChange={spy} />)
+    console.log(wrapper.debug())
+    wrapper.find('.item-button').simulate('click')
+    expect(spy.calledOnce).toBe.true
+    expect(spy.calledWith(item, false)).toBe.true
+  })
+})
+
+/*
+function renderShalow(component) {
+  const renderer = ReactTestUtils.createRenderer();
+  renderer.render(component)
+  return renderer.getRenderOutput()
+}
+
+class Label extends React.component {
+  render() { return <span>Hello {this.props.name}</span> }
+}
+class Button extends React.component {
+  render() { return <div><Label name={this.props.name} /></div> }
+}
+
+
+describe('Containers:', function() {
+  describe('Component: DocEditor', () => {
+    it('test', () => {
+      expect(true).toEqual(true)
+    }),
+
+    it('renders', () => {
+      var result = renderShalow(<DocEditor name="taewon"/>)
+      console.log(result)
+      //expect(result.type).toBe('div');
+      //expect(result.props.children).toEqual([
+      //  <div className="box">box</div>,
+      //])
+    })
+  })
+})
+*/
