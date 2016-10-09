@@ -88,19 +88,19 @@ var DocEditor = React.createClass({
 		var store = this.props.store;
 		return (
 			<div className="docEditor">
+			  <h1>Json Doc Editor</h1>
               <pre>{ JSON.stringify( this.props.store.json, null, '  ')}</pre>
+			  /*
 			<ObjectAttribute value={ this.props.store.json } original={ this.props.original.json }/>
-				
+				*/
 			</div>
 		);
 	},
 
 	componentDidMount: function(){
 		var me = this,
-
 			// Let's create a listener to update the store on change
-			listener = this.props.store.getListener()
-		;
+			listener = this.props.store.getListener();
 
 		// We are going to update the props every time the store changes
 		listener.on('update', function( updated ){
