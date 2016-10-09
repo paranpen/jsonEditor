@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Item from './Item';
 
-class App extends Component {
+class DocEditor extends Component {
 
     test() {
         alert('test!');
@@ -9,11 +9,8 @@ class App extends Component {
 
     render() {
         return (
-            <div>
-                <h1>Hey</h1>
-                <div className='box'>
-                    <div>Help!</div>
-                </div>
+            <div className="foo">
+                <div className='box'>box</div>
                 <Item name={'taewony'}/>
                 <br/>
                 <button type='button' onClick={this.test}>TEST</button>
@@ -22,4 +19,4 @@ class App extends Component {
     }
 };
 
-module.exports = App;
+export default DocEditor;
