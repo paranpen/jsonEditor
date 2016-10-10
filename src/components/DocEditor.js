@@ -3,7 +3,7 @@ import Freezer from 'freezer-js'
 
 /****************
 JSON data to edit
-*****************/
+****************
 var json = {
 	hola: 'amigo',
 	adios:'enemigo',
@@ -12,7 +12,7 @@ var json = {
 };
 
 // Create a Freezer store
-var frozen = new Freezer( { json: json });
+// var frozen = new Freezer( { json: json }); */
 
 /****************
 Helper functions
@@ -51,9 +51,8 @@ var typeDefaultValues = {
  * @return {ReactComponent}  A react component to edit the attribute.
  */
 var createAttribute = function( value, original, parent, key ){
-	var type = guessType( value );
-		className = StringAttribute
-	;
+	var type = guessType( value )
+	var	className = StringAttribute
 
 	if( type == 'object' )
 		className = ObjectAttribute;
@@ -85,29 +84,27 @@ JSX components
 var DocEditor = React.createClass({
 
 	render: function(){
-		var store = this.props.store;
+		var store = this.props.store
 		return (
 			<div className="docEditor">
 			  <h1>Json Doc Editor</h1>
-              <pre>{ JSON.stringify( this.props.store.json, null, '  ')}</pre>
-			  /*
-			<ObjectAttribute value={ this.props.store.json } original={ this.props.original.json }/>
-				*/
+				<pre>{ JSON.stringify( this.props.store.json, null, '  ')}</pre>
+				<ObjectAttribute value={ this.props.store.json } original={ this.props.original.json }/>
 			</div>
-		);
+		)
 	},
 
 	componentDidMount: function(){
-		var me = this,
-			// Let's create a listener to update the store on change
-			listener = this.props.store.getListener();
-
+		var me = this
+		// Let's create a listener to update the store on change
+		var listener = this.props.store.getListener() 
+			
 		// We are going to update the props every time the store changes
 		listener.on('update', function( updated ){
-			me.setProps({ store: updated });
-		});
+			me.setState({ store: updated })
+		})
 	}
-});
+})
 
 /**
  * Attribute component that represent each Array element or Object property.
@@ -118,10 +115,9 @@ var DocEditor = React.createClass({
  */
 var Attribute = React.createClass({
 	render: function(){
-		var typeAttribute = createAttribute( this.props.value, this.props.original, this.props.parent, this.props.attrkey ),
-			modifiedClass = this.props.value == this.props.original ? '' : ' modified',
-			className = 'hashAttribute' + modifiedClass
-		;
+		var typeAttribute = createAttribute( this.props.value, this.props.original, this.props.parent, this.props.attrkey )
+		var modifiedClass = this.props.value == this.props.original ? '' : ' modified'
+		var className = 'hashAttribute' + modifiedClass
 
 		return (
 			<div className={className}>
@@ -129,23 +125,22 @@ var Attribute = React.createClass({
 				<span className="attrName">{this.props.attrkey }:</span>
 				<span className="attrValue">{ typeAttribute }</span>
 			</div>
-		);
+		)
 	},
 
 	handleRemove: function( e ){
-		e.preventDefault();
+		e.preventDefault()
 		if( this.props.parent.constructor == Array )
-			this.props.parent.splice( this.props.attrkey, 1 );
+			this.props.parent.splice( this.props.attrkey, 1 )
 		else
-			this.props.parent.remove( this.props.attrkey );
+			this.props.parent.remove( this.props.attrkey )
 	},
 
 	shouldComponentUpdate: function( nextProps, nextState ){
 		return nextProps.value != this.props.value || 
           nextProps.parent != this.props.parent
-        ;
 	}
-});
+})
 
 /**
  * Component for editing a hash.
@@ -154,14 +149,13 @@ var Attribute = React.createClass({
  */
 var ObjectAttribute = React.createClass({
 	getInitialState: function(){
-		return { editing: false };
+		return { editing: false }
 	},
 
 	render: function(){
-		var keys = Object.keys( this.props.value ),
-			className = this.state.editing ? 'open objectAttr compoundAttr' : 'objectAttr compoundAttr',
-			openHash = ''
-		;
+		var keys = Object.keys( this.props.value )
+		var className = this.state.editing ? 'open objectAttr compoundAttr' : 'objectAttr compoundAttr'
+		var openHash = ''
 
 		var attrs = [];
 		for( var attr in this.props.value ){
@@ -179,18 +173,17 @@ var ObjectAttribute = React.createClass({
 		openHash = (<div className="attrChildren">
 			{ attrs }
 			<AttributeCreator type="attribute" parent={ this.props.value } />
-		</div>);
+		</div>)
 
 		return (<span className={ className }>
 				<span onClick={ this.toggleEditing } className="hashToggle">Map [{ keys.length }]</span>
 				{openHash}
 			</span>)
-		;
 	},
 	toggleEditing: function(){
-		this.setState({ editing: !this.state.editing });
+		this.setState({ editing: !this.state.editing })
 	}
-});
+})
 
 /**
  * Component for editing an array.
@@ -199,14 +192,13 @@ var ObjectAttribute = React.createClass({
  */
 var ArrayAttribute = React.createClass({
 	getInitialState: function(){
-		return { editing: false };
+		return { editing: false }
 	},
 
 	render: function(){
-		var keys = Object.keys( this.props.value ),
-			className = this.state.editing ? 'open arrayAttr compoundAttr' : 'arrayAttr compoundAttr',
-			openArray = ''
-		;
+		var keys = Object.keys( this.props.value )
+		var className = this.state.editing ? 'open arrayAttr compoundAttr' : 'arrayAttr compoundAttr'
+		var openArray = ''
 
 		var attrs = [];
 		for (var i = 0; i < this.props.value.length; i++) {
@@ -218,7 +210,7 @@ var ArrayAttribute = React.createClass({
 					key={ i }
 					attrkey={ i }
 				/>
-			);
+			)
 		}
 
 		openArray = (<div className="attrChildren">
@@ -234,9 +226,9 @@ var ArrayAttribute = React.createClass({
 		;
 	},
 	toggleEditing: function(){
-		this.setState({editing: !this.state.editing});
+		this.setState({editing: !this.state.editing})
 	}
-});
+})
 
 /**
  * Component for editing a string.
@@ -250,45 +242,45 @@ var StringAttribute = React.createClass({
 			editing: !this.props.value,
 			value: this.props.value,
 			modified: false
-		};
+		}
 	},
 
 	render: function(){
-		var className = 'stringAttr';
+		var className = 'stringAttr'
 		if( this.state.modified )
-			className = ' modified';
+			className = ' modified'
 
 		if( !this.state.editing )
-			return <span onClick={ this.setEditMode } className={ className }>{ this.props.value }</span>;
+			return <span onClick={ this.setEditMode } className={ className }>{ this.props.value }</span>
 
-		return <input value={ this.state.value } onChange={ this.updateValue } onBlur={ this.setValue } ref="input" onKeyDown={this.handleKeyDown} />;
+		return <input value={ this.state.value } onChange={ this.updateValue } onBlur={ this.setValue } ref="input" onKeyDown={this.handleKeyDown} />
 	},
 
 	componentDidUpdate: function( prevProps, prevState ){
 		if( this.state.editing && ! prevState.editing ){
-			var node = this.refs.input.getDOMNode();
-			node.focus();
-			node.value = node.value;
+			var node = this.refs.input.getDOMNode()
+			node.focus()
+			node.value = node.value
 		}
 	},
 
 	componentDidMount: function(){
 		if( this.state.editing ){
-			var node = this.refs.input.getDOMNode();
-			node.focus();
-			node.value = node.value;
+			var node = this.refs.input.getDOMNode()
+			node.focus()
+			node.value = node.value
 		}
 	},
 
 	setEditMode: function(){
-		this.setState({editing: true});
+		this.setState({editing: true})
 	},
 
 	setValue: function(){
 		if( this.state.modified )
 			this.props.parent.set( this.props.attrkey, this.state.value );
 
-		this.setState({editing: false});
+		this.setState({editing: false})
 	},
 
 	updateValue: function( e ){
@@ -297,12 +289,12 @@ var StringAttribute = React.createClass({
 
 	handleKeyDown: function( e ){
 		if( e.which == 13 )
-			this.setValue();
+			this.setValue()
 	},
 	toggleEditing: function(){
-		this.setState({ editing: !this.state.editing });
+		this.setState({ editing: !this.state.editing })
 	}
-});
+})
 
 /**
  * Component to add attributes to a Hash or Array.
@@ -316,21 +308,21 @@ var AttributeCreator = React.createClass({
 			creating: false,
 			attrkey: this.props.attrkey,
 			type: 'string'
-		};
+		}
 	},
 
 	render: function(){
 		if( !this.state.creating )
-			return <a href="#" onClick={this.handleCreate}>+ Add {this.props.type}</a>;
+			return <a href="#" onClick={this.handleCreate}>+ Add {this.props.type}</a>
 
-		var attrName;
+		var attrName
 		if( typeof this.props.attrkey != 'undefined' )
-			attrName =  <span className="attrName">{this.props.attrkey}:</span>;
+			attrName =  <span className="attrName">{this.props.attrkey}:</span>
 		else {
 			attrName = [
 				<input ref="keyInput" type="text" value={this.state.value} onChange={this.changeKey}/>,
 				<span>:</span>
-			];
+			]
 		}
 
 		return (<div className="hashAttribute">
@@ -342,53 +334,52 @@ var AttributeCreator = React.createClass({
 				</select>
 				<button onClick={ this.createAttribute }>OK</button>,
 				<a href="#" className="cancelAttr" onClick={ this.handleCancel }>Cancel</a>
-		</div>);
+		</div>)
 	},
 
 	componentDidUpdate: function( prevProps, prevState){
 		if( !prevState.creating && this.state.creating ){
 			if( this.refs.keyInput )
-				this.refs.keyInput.getDOMNode().focus();
+				this.refs.keyInput.getDOMNode().focus()
 			else
-				this.refs.typeSelector.getDOMNode().focus();
+				this.refs.typeSelector.getDOMNode().focus()
 		}
 	},
 
 	componentWillReceiveProps: function( newProps ){
-		this.setState({attrkey: newProps.attrkey});
+		this.setState({attrkey: newProps.attrkey})
 	},
 
 	handleCreate: function( e ){
-		e.preventDefault();
-		this.setState({creating: true});
+		e.preventDefault()
+		this.setState({creating: true})
 	},
 
 	handleCancel: function( e ){
-		e.preventDefault();
-		this.setState({creating: false});
+		e.preventDefault()
+		this.setState({creating: false})
 	},
 
 	changeType: function( e ){
-		this.setState({type: e.target.value});
+		this.setState({type: e.target.value})
 	},
 
 	changeKey: function( e ){
-		this.setState({attrkey: e.target.value});
+		this.setState({attrkey: e.target.value})
 	},
 
 	createAttribute: function(){
 
-		this.setState({creating: false});
+		this.setState({creating: false})
 
-		var parent = this.props.parent,
-			value = typeDefaultValues[ this.state.type ]
-		;
+		var parent = this.props.parent
+		var value = typeDefaultValues[ this.state.type ]
 
 		if( parent.constructor == Array )
 			parent.push( value )
 		else
-			parent.set(this.state.attrkey, value );
+			parent.set(this.state.attrkey, value )
 	}
-});
+})
 
-export default DocEditor;
+export default DocEditor
